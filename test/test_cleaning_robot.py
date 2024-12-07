@@ -8,9 +8,13 @@ from src.cleaning_robot import CleaningRobot
 
 class TestCleaningRobot(TestCase):
 
-    @patch.object(GPIO, "input")
-    def test_something(self, mock_object: Mock):
-        # This is an example of test where I want to mock the GPIO.input() function
-        pass
+    def test_initialize_robot(self, mock_object: Mock):
+        #Arrange
+        r = CleaningRobot()
+        #Act
+        r.initialize_robot()
+        #assert
+        self.assertEqual("0,0,N", r.robot_status())
+
 
 
