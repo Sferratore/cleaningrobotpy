@@ -8,7 +8,7 @@ from src.cleaning_robot import CleaningRobot
 
 class TestCleaningRobot(TestCase):
 
-    def test_initialize_robot(self, mock_object: Mock):
+    def test_initialize_robot(self):
         #Arrange
         r = CleaningRobot()
         #Act

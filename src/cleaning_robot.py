@@ -1,3 +1,4 @@
+
 import time
 
 DEPLOYMENT = False  # This variable is to understand whether you are deploying on the actual hardware
@@ -65,12 +66,12 @@ class CleaningRobot:
         self.cleaning_system_on = False
 
     def initialize_robot(self) -> None:
-        # To be implemented
-        pass
+        self.pos_x = 0
+        self.pos_y = 0
+        self.heading = self.N
 
     def robot_status(self) -> str:
-        # To be implemented
-        pass
+        return f"{self.pos_x},{self.pos_y},{self.heading}"
 
     def execute_command(self, command: str) -> str:
         # To be implemented
@@ -132,3 +133,4 @@ class CleaningRobot:
 
 class CleaningRobotError(Exception):
     pass
+
