@@ -17,10 +17,11 @@ class TestCleaningRobot(TestCase):
         #assert
         self.assertEqual("0,0,N", r.robot_status())
 
-    @patch.object(IBS, "get_charge_left")
+
     @patch.object(GPIO, "output")
+    @patch.object(IBS, "get_charge_left")
     def test_manage_clean_system_when_charge_less_than_10_percent(self, mock_ibs: Mock, mock_output: Mock):
-        mock_ibs.return_value = 9
+        mock_ibs.side_effect = [9]  # Per qualche motivo mi veniva restituito un oggetto MagicMock con return_value. Ho quindi usato side_effect
         r = CleaningRobot()
         r.initialize_robot()
         r.manage_cleaning_system()
