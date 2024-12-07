@@ -78,7 +78,7 @@ class CleaningRobot:
         pass
 
     def obstacle_found(self) -> bool:
-        # To be implemented
+        #To be implemented
         pass
 
     def manage_cleaning_system(self) -> None:
