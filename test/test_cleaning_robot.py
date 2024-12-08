@@ -1,10 +1,11 @@
 import unittest.mock
+from platform import system
 from unittest import TestCase
 from unittest.mock import Mock, patch, call
 
 from mock import GPIO
 from mock.ibs import IBS
-from src.cleaning_robot import CleaningRobot
+from src.cleaning_robot import CleaningRobot, CleaningRobotError
 
 
 class TestCleaningRobot(TestCase):
@@ -46,5 +47,47 @@ class TestCleaningRobot(TestCase):
         self.assertEqual(r.recharge_led_on, False)
         self.assertEqual(r.cleaning_system_on, True)
 
+    @patch.object(CleaningRobot, "activate_wheel_motor")
+    def test_execute_command_move_forward(self, mock_wheel: Mock):
+        r = CleaningRobot()
+        r.initialize_robot()
+        result = r.execute_command("f")
+        mock_wheel.assert_called()
+        self.assertEqual(result, "0,1,N")
 
+    @patch.object(CleaningRobot, "activate_rotation_motor")
+    def test_execute_command_move_right(self, mock_rotation: Mock):
+        r = CleaningRobot()
+        r.initialize_robot()
+        result =r.execute_command("r")
+        mock_rotation.assert_called_once_with("r")
+        self.assertEqual(result, "0,0,E")
+
+    @patch.object(CleaningRobot, "activate_rotation_motor")
+    def test_execute_command_move_left(self, mock_rotation: Mock):
+        r = CleaningRobot()
+        r.initialize_robot()
+        result = r.execute_command("l")
+        mock_rotation.assert_called_once_with("l")
+        self.assertEqual(result, "0,0,W")
+
+    @patch.object(CleaningRobot, "activate_wheel_motor")
+    @patch.object(CleaningRobot, "activate_rotation_motor")
+    def test_execute_command_move_more_than_once(self, mock_rotation: Mock, mock_wheel: Mock):
+        r = CleaningRobot()
+        r.initialize_robot()
+        r.execute_command("f")
+        r.execute_command("r")
+        result = r.execute_command("f")
+        mock_rotation.assert_called_once_with("r")
+        mock_wheel.assert_has_calls([
+            unittest.mock.call(),
+            unittest.mock.call()
+        ])
+        self.assertEqual(result, "1,1,E")
+
+    def test_execute_command_wrong_command(self):
+        r = CleaningRobot()
+        r.initialize_robot()
+        self.assertRaises(CleaningRobotError, r.execute_command, "a")
 
