@@ -91,14 +91,14 @@ class TestCleaningRobot(TestCase):
         r.initialize_robot()
         self.assertRaises(CleaningRobotError, r.execute_command, "a")
 
-    @patch.object(GPIO, "output")
-    def test_obstacle_found(self, mock_output: Mock):
-        mock_output.side_effect = [True, False]
+    @patch.object(GPIO, "input")
+    def test_obstacle_found(self, mock_input: Mock):
+        mock_input.side_effect = [True, False]
         r = CleaningRobot()
         r.initialize_robot()
         result = r.obstacle_found()
         result2 = r.obstacle_found()
-        mock_output.assert_called_with([
+        mock_input.assert_has_calls([
             unittest.mock.call(15),
             unittest.mock.call(15)
         ])

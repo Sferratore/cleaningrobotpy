@@ -97,8 +97,7 @@ class CleaningRobot:
         return self.robot_status()
 
     def obstacle_found(self) -> bool:
-        #To be implemented
-        pass
+        return GPIO.input(self.INFRARED_PIN)
 
     def manage_cleaning_system(self) -> None:
         charge_left = self.ibs.get_charge_left()
