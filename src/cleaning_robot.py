@@ -74,18 +74,8 @@ class CleaningRobot:
         return f"{self.pos_x},{self.pos_y},{self.heading}"
 
     def execute_command(self, command: str) -> str:
-        if command == self.FORWARD:
-            self.activate_wheel_motor()
-            self.pos_y += 1
-        elif command == self.LEFT:
-            self.activate_rotation_motor(self.LEFT)
-            self.heading = self.W if self.heading == self.N else self.N
-        elif command == self.RIGHT:
-            self.activate_rotation_motor(self.RIGHT)
-            self.heading = self.E if self.heading == self.N else self.N
-        else:
-            raise CleaningRobotError("Invalid command")
-        return self.robot_status()
+        # To be implemented
+        pass
 
     def obstacle_found(self) -> bool:
         #To be implemented
