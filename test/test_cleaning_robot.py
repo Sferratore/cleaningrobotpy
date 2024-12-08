@@ -105,4 +105,14 @@ class TestCleaningRobot(TestCase):
         self.assertTrue(result)
         self.assertFalse(result2)
 
+    @patch.object(CleaningRobot, "obstacle_found")
+    def test_obstacle_detecting_in_execute_command(self, mock_obstacle: Mock):
+        mock_obstacle.side_effect = [True]
+        r = CleaningRobot()
+        r.initialize_robot()
+        result = r.execute_command("f")
+        mock_obstacle.assert_called()
+        self.assertEqual(result, "(0,0,N)(0,1)")
+
+
 
