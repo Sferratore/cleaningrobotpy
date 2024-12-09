@@ -84,17 +84,18 @@ class CleaningRobot:
                     return f"({self.pos_x},{self.pos_y},{self.heading})({self.pos_x},{self.pos_y+1})"
                 elif self.heading == self.S:
                     return f"({self.pos_x},{self.pos_y},{self.heading})({self.pos_x},{self.pos_y-1})"
-            self.activate_wheel_motor()
-            if self.heading == self.E:
-                self.pos_x += 1;
-            elif self.heading == self.W:
-                self.pos_x += -1
-            elif self.heading == self.N:
-                self.pos_y += 1
-            elif self.heading == self.S:
-                self.pos_y += -1
             else:
-                raise CleaningRobotError("Heading is not a correct value.")
+                self.activate_wheel_motor()
+                if self.heading == self.E:
+                    self.pos_x += 1;
+                elif self.heading == self.W:
+                    self.pos_x += -1
+                elif self.heading == self.N:
+                    self.pos_y += 1
+                elif self.heading == self.S:
+                    self.pos_y += -1
+                else:
+                    raise CleaningRobotError("Heading is not a correct value.")
         elif command == self.LEFT:
             self.activate_rotation_motor(self.LEFT)
             self.heading = self.W if self.heading == self.N else self.N
