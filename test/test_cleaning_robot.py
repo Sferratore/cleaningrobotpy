@@ -127,7 +127,7 @@ class TestCleaningRobot(TestCase):
         self.assertEqual(result, "(0,0,N)(0,1)")
 
     @patch.object(IBS, "get_charge_left")
-    def test_check_battery_in_execute_command(self, mock_ibs: Mock):
+    def test_execute_command_when_battery_is_under_10(self, mock_ibs: Mock):
         mock_ibs.side_effect = [9]
         r = CleaningRobot()
         r.manage_cleaning_system = MagicMock(wraps=r.manage_cleaning_system) #  I substituted the original method with the MagicMock version that still has the original code inside thanks to the wrap, so that I can mock without having problems in the usage. If you use @patch.object on this, it breaks!!
