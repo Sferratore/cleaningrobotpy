@@ -1,7 +1,7 @@
 import unittest.mock
 from platform import system
 from unittest import TestCase
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock, patch, call, MagicMock
 
 from mock import GPIO
 from mock.ibs import IBS
@@ -113,6 +113,16 @@ class TestCleaningRobot(TestCase):
         result = r.execute_command("f")
         mock_obstacle.assert_called()
         self.assertEqual(result, "(0,0,N)(0,1)")
+
+    @patch.object(IBS, "get_charge_left")
+    def test_check_battery_in_execute_command(self, mock_ibs: Mock):
+        mock_ibs.side_effect = [9]
+        r = CleaningRobot()
+        r.manage_cleaning_system = MagicMock(wraps=r.manage_cleaning_system) # I substituted the original method with the MagicMock version that still has the original code inside thanks to the wrap, so that I can mock without having problems in the usage. If you use @patch.object on this, it breaks!!
+        r.initialize_robot()
+        result = r.execute_command("f")
+        r.manage_cleaning_system.assert_called() # Checking that method has been called :)
+        self.assertEqual(result, "!(0,0,N)")
 
 
 
