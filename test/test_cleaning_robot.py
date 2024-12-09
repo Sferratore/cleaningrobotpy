@@ -47,33 +47,41 @@ class TestCleaningRobot(TestCase):
         self.assertEqual(r.recharge_led_on, False)
         self.assertEqual(r.cleaning_system_on, True)
 
+    @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_wheel_motor")
-    def test_execute_command_move_forward(self, mock_wheel: Mock):
+    def test_execute_command_move_forward(self, mock_wheel: Mock, mock_ibs: Mock):
+        mock_ibs.side_effect = [100]
         r = CleaningRobot()
         r.initialize_robot()
         result = r.execute_command("f")
         mock_wheel.assert_called()
         self.assertEqual(result, "0,1,N")
 
+    @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_rotation_motor")
-    def test_execute_command_move_right(self, mock_rotation: Mock):
+    def test_execute_command_move_right(self, mock_rotation: Mock, mock_ibs: Mock):
+        mock_ibs.side_effect = [100]
         r = CleaningRobot()
         r.initialize_robot()
         result =r.execute_command("r")
         mock_rotation.assert_called_once_with("r")
         self.assertEqual(result, "0,0,E")
 
+    @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_rotation_motor")
-    def test_execute_command_move_left(self, mock_rotation: Mock):
+    def test_execute_command_move_left(self, mock_rotation: Mock, mock_ibs: Mock):
+        mock_ibs.side_effect = [100]
         r = CleaningRobot()
         r.initialize_robot()
         result = r.execute_command("l")
         mock_rotation.assert_called_once_with("l")
         self.assertEqual(result, "0,0,W")
 
+    @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_wheel_motor")
     @patch.object(CleaningRobot, "activate_rotation_motor")
-    def test_execute_command_move_more_than_once(self, mock_rotation: Mock, mock_wheel: Mock):
+    def test_execute_command_move_more_than_once(self, mock_rotation: Mock, mock_wheel: Mock, mock_ibs: Mock):
+        mock_ibs.side_effect = [100, 99, 99]
         r = CleaningRobot()
         r.initialize_robot()
         r.execute_command("f")
@@ -86,7 +94,9 @@ class TestCleaningRobot(TestCase):
         ])
         self.assertEqual(result, "1,1,E")
 
-    def test_execute_command_wrong_command(self):
+    @patch.object(IBS, "get_charge_left")
+    def test_execute_command_wrong_command(self, mock_ibs: Mock):
+        mock_ibs.side_effect = [100]
         r = CleaningRobot()
         r.initialize_robot()
         self.assertRaises(CleaningRobotError, r.execute_command, "a")
@@ -105,8 +115,10 @@ class TestCleaningRobot(TestCase):
         self.assertTrue(result)
         self.assertFalse(result2)
 
+    @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "obstacle_found")
-    def test_obstacle_detecting_in_execute_command(self, mock_obstacle: Mock):
+    def test_obstacle_detecting_in_execute_command(self, mock_obstacle: Mock, mock_ibs: Mock):
+        mock_ibs.side_effect = [100]
         mock_obstacle.side_effect = [True]
         r = CleaningRobot()
         r.initialize_robot()

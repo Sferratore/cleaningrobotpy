@@ -74,6 +74,9 @@ class CleaningRobot:
         return f"{self.pos_x},{self.pos_y},{self.heading}"
 
     def execute_command(self, command: str) -> str:
+        self.manage_cleaning_system()
+        if (not self.cleaning_system_on and self.recharge_led_on):
+            return f"!({self.pos_x},{self.pos_y},{self.heading})"
         if command == self.FORWARD:
             if self.obstacle_found():
                 if self.heading == self.E:
