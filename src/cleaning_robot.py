@@ -72,6 +72,9 @@ class CleaningRobot:
         self.recharge_led_on = False
         self.cleaning_system_on = False
 
+        self.garbage_bag_led_on = False
+        self.garbage_bag_resource_available = False
+
     def initialize_robot(self) -> None:
         self.pos_x = 0
         self.pos_y = 0

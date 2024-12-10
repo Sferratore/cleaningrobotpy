@@ -136,6 +136,29 @@ class TestCleaningRobot(TestCase):
         r.manage_cleaning_system.assert_called() # Checking that method has been called :)
         self.assertEqual(result, "!(0,0,N)")
 
+    @patch.object(GPIO, "output")
+    @patch.object(GPIO, "input")
+    def test_check_garbage_bag_when_not_full(self, mock_garbage_pin: Mock, mock_garbage_led: Mock):
+        mock_garbage_pin.return_value = True
+        r = CleaningRobot()
+        r.check_garbage_bag()
+        mock_garbage_pin.assert_called_once_with(9)
+        mock_garbage_led.assert_called_once_with(6, False)
+        self.assertTrue(r.garbage_bag_resource_available)
+        self.assertFalse(r.garbage_bag_led_on)
+
+    @patch.object(GPIO, "output")
+    @patch.object(GPIO, "input")
+    def test_check_garbage_bag_when_full(self, mock_garbage_pin: Mock, mock_garbage_led: Mock):
+        mock_garbage_pin.return_value = False
+        r = CleaningRobot()
+        r.check_garbage_bag()
+        mock_garbage_pin.assert_called_once_with(9)
+        mock_garbage_led.assert_called_once_with(6, True)
+        self.assertFalse(r.garbage_bag_resource_available)
+        self.assertTrue(r.garbage_bag_led_on)
+
+
 
 
 
