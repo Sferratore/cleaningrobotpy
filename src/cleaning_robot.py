@@ -16,9 +16,16 @@ except:
 
 class CleaningRobot:
 
+    LED_GARBAGE_BAG = 6
+    LED_SOAP_CONTAINER = 7
+    LED_WATER_CONTAINER = 8
+    GARBAGE_BAG_PIN = 9
+    SOAP_CONTAINER_PIN = 10
+    WATER_CONTAINER_PIN = 11
     RECHARGE_LED_PIN = 12
     CLEANING_SYSTEM_PIN = 13
     INFRARED_PIN = 15
+
 
     # Wheel motor pins
     PWMA = 16
