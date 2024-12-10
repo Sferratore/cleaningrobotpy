@@ -85,7 +85,7 @@ class CleaningRobot:
         self.pos_x = 0
         self.pos_y = 0
         self.heading = self.N
-        
+        self.check_cleaning_resources()  # Used to turn on the LEDs
 
     def robot_status(self) -> str:
         return f"{self.pos_x},{self.pos_y},{self.heading}"
