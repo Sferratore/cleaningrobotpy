@@ -75,6 +75,9 @@ class CleaningRobot:
         self.garbage_bag_led_on = False
         self.garbage_bag_resource_available = False
 
+        self.soap_container_led_on = False
+        self.soap_container_resource_available = False
+
     def initialize_robot(self) -> None:
         self.pos_x = 0
         self.pos_y = 0
@@ -189,6 +192,9 @@ class CleaningRobot:
             GPIO.output(self.LED_GARBAGE_BAG, False)
             self.garbage_bag_led_on = False
         return self.garbage_bag_resource_available
+
+    def check_soap_container(self) -> bool:
+        pass
 
 
 class CleaningRobotError(Exception):

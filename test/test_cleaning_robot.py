@@ -158,7 +158,26 @@ class TestCleaningRobot(TestCase):
         self.assertFalse(r.garbage_bag_resource_available)
         self.assertTrue(r.garbage_bag_led_on)
 
+    @patch.object(GPIO, "output")
+    @patch.object(GPIO, "input")
+    def test_check_soap_container_when_not_empty(self, mock_soap_pin: Mock, mock_soap_led: Mock):
+        mock_soap_pin.return_value = True
+        r = CleaningRobot()
+        r.check_garbage_bag()
+        mock_soap_pin.assert_called_once_with(10)
+        mock_soap_led.assert_called_once_with(7, False)
+        self.assertTrue(r.soap_container_resource_available)
+        self.assertFalse(r.soap_container_led_on)
 
-
+    @patch.object(GPIO, "output")
+    @patch.object(GPIO, "input")
+    def test_check_soap_container_when_empty(self, mock_soap_pin: Mock, mock_soap_led: Mock):
+        mock_soap_pin.return_value = False
+        r = CleaningRobot()
+        r.check_garbage_bag()
+        mock_soap_pin.assert_called_once_with(10)
+        mock_soap_led.assert_called_once_with(7, True)
+        self.assertFalse(r.soap_container_resource_available)
+        self.assertTrue(r.soap_container_led_on)
 
 
