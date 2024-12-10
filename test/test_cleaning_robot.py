@@ -180,4 +180,24 @@ class TestCleaningRobot(TestCase):
         self.assertFalse(r.soap_container_resource_available)
         self.assertTrue(r.soap_container_led_on)
 
+    @patch.object(GPIO, "output")
+    @patch.object(GPIO, "input")
+    def test_check_water_container_when_not_empty(self, mock_water_pin: Mock, mock_water_led: Mock):
+        mock_water_pin.return_value = True
+        r = CleaningRobot()
+        r.check_water_container()
+        mock_water_pin.assert_called_once_with(11)
+        mock_water_led.assert_called_once_with(8, False)
+        self.assertTrue(r.water_container_resource_available)
+        self.assertFalse(r.water_container_led_on)
 
+    @patch.object(GPIO, "output")
+    @patch.object(GPIO, "input")
+    def test_check_water_container_when_empty(self, mock_water_pin: Mock, mock_water_led: Mock):
+        mock_water_pin.return_value = False
+        r = CleaningRobot()
+        r.check_water_container()
+        mock_water_pin.assert_called_once_with(11)
+        mock_water_led.assert_called_once_with(8, True)
+        self.assertFalse(r.water_container_resource_available)
+        self.assertTrue(r.water_container_led_on)

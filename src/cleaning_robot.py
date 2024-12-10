@@ -78,6 +78,9 @@ class CleaningRobot:
         self.soap_container_led_on = False
         self.soap_container_resource_available = False
 
+        self.water_container_led_on = False
+        self.water_container_resource_available = False
+
     def initialize_robot(self) -> None:
         self.pos_x = 0
         self.pos_y = 0
@@ -202,6 +205,9 @@ class CleaningRobot:
             GPIO.output(self.LED_SOAP_CONTAINER, False)
             self.soap_container_led_on = False
         return self.soap_container_resource_available
+
+    def check_water_container(self) -> bool:
+        pass
 
 
 class CleaningRobotError(Exception):
