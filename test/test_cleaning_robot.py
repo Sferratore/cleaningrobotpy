@@ -229,3 +229,10 @@ class TestCleaningRobot(TestCase):
         mock_soap.assert_called()
         mock_water.assert_called()
         self.assertFalse(result)
+
+    @patch.object(CleaningRobot, "check_cleaning_resources")
+    def test_check_cleaning_resources_in_initialize_robot(self, mock_ccr: Mock):
+        mock_ccr.return_value = True
+        r = CleaningRobot()
+        r.initialize_robot()
+        mock_ccr.assert_called()
