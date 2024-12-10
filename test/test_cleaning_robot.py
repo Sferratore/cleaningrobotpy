@@ -163,7 +163,7 @@ class TestCleaningRobot(TestCase):
     def test_check_soap_container_when_not_empty(self, mock_soap_pin: Mock, mock_soap_led: Mock):
         mock_soap_pin.return_value = True
         r = CleaningRobot()
-        r.check_garbage_bag()
+        r.check_soap_container()
         mock_soap_pin.assert_called_once_with(10)
         mock_soap_led.assert_called_once_with(7, False)
         self.assertTrue(r.soap_container_resource_available)
@@ -174,7 +174,7 @@ class TestCleaningRobot(TestCase):
     def test_check_soap_container_when_empty(self, mock_soap_pin: Mock, mock_soap_led: Mock):
         mock_soap_pin.return_value = False
         r = CleaningRobot()
-        r.check_garbage_bag()
+        r.check_soap_container()
         mock_soap_pin.assert_called_once_with(10)
         mock_soap_led.assert_called_once_with(7, True)
         self.assertFalse(r.soap_container_resource_available)
