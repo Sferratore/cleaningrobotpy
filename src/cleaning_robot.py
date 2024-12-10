@@ -207,7 +207,14 @@ class CleaningRobot:
         return self.soap_container_resource_available
 
     def check_water_container(self) -> bool:
-        pass
+        self.water_container_resource_available = GPIO.input(self.WATER_CONTAINER_PIN)
+        if not self.water_container_resource_available:
+            GPIO.output(self.LED_WATER_CONTAINER, True)
+            self.water_container_led_on = True
+        else:
+            GPIO.output(self.LED_WATER_CONTAINER, False)
+            self.water_container_led_on = False
+        return self.water_container_resource_available
 
 
 class CleaningRobotError(Exception):
