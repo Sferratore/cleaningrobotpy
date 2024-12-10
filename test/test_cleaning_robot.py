@@ -205,7 +205,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(CleaningRobot, "check_water_container")
     @patch.object(CleaningRobot, "check_soap_container")
     @patch.object(CleaningRobot, "check_garbage_bag")
-    def test_check_cleaning_resources(self, mock_garbage: Mock, mock_soap: Mock, mock_water: Mock):
+    def test_check_cleaning_resources_when_ok(self, mock_garbage: Mock, mock_soap: Mock, mock_water: Mock):
         mock_garbage.return_value = True
         mock_soap.return_value = True
         mock_water.return_value = True
@@ -215,3 +215,17 @@ class TestCleaningRobot(TestCase):
         mock_soap.assert_called()
         mock_water.assert_called()
         self.assertTrue(result)
+
+    @patch.object(CleaningRobot, "check_water_container")
+    @patch.object(CleaningRobot, "check_soap_container")
+    @patch.object(CleaningRobot, "check_garbage_bag")
+    def test_check_cleaning_resources_when_not_ok(self, mock_garbage: Mock, mock_soap: Mock, mock_water: Mock):
+        mock_garbage.return_value = True
+        mock_soap.return_value = False
+        mock_water.return_value = True
+        r = CleaningRobot()
+        result = r.check_cleaning_resources()
+        mock_garbage.assert_called()
+        mock_soap.assert_called()
+        mock_water.assert_called()
+        self.assertFalse(result)

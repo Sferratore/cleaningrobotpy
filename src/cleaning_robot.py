@@ -217,7 +217,10 @@ class CleaningRobot:
         return self.water_container_resource_available
 
     def check_cleaning_resources(self) -> bool:
-        pass
+        garbage_bag = self.check_garbage_bag()
+        soap_container = self.check_soap_container()
+        water_container = self.check_water_container()
+        return garbage_bag and soap_container and water_container
 
 class CleaningRobotError(Exception):
     pass
