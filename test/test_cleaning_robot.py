@@ -201,3 +201,17 @@ class TestCleaningRobot(TestCase):
         mock_water_led.assert_called_once_with(8, True)
         self.assertFalse(r.water_container_resource_available)
         self.assertTrue(r.water_container_led_on)
+
+    @patch.object(CleaningRobot, "check_water_container")
+    @patch.object(CleaningRobot, "check_soap_container")
+    @patch.object(CleaningRobot, "check_garbage_bag")
+    def test_check_cleaning_resources(self, mock_garbage: Mock, mock_soap: Mock, mock_water: Mock):
+        mock_garbage.return_value = True
+        mock_soap.return_value = True
+        mock_water.return_value = True
+        r = CleaningRobot()
+        result = r.check_cleaning_resources()
+        mock_garbage.assert_called()
+        mock_soap.assert_called()
+        mock_water.assert_called()
+        self.assertTrue(result)

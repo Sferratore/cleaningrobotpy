@@ -216,6 +216,8 @@ class CleaningRobot:
             self.water_container_led_on = False
         return self.water_container_resource_available
 
+    def check_cleaning_resources(self) -> bool:
+        pass
 
 class CleaningRobotError(Exception):
     pass
