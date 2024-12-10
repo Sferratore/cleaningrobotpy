@@ -180,6 +180,16 @@ class CleaningRobot:
         GPIO.output(self.PWMB, GPIO.LOW)
         GPIO.output(self.STBY, GPIO.LOW)
 
+    def check_garbage_bag(self) -> bool:
+        self.garbage_bag_resource_available = GPIO.input(self.GARBAGE_BAG_PIN)
+        if not self.garbage_bag_resource_available:
+            GPIO.output(self.LED_GARBAGE_BAG, True)
+            self.garbage_bag_led_on = True
+        else:
+            GPIO.output(self.LED_GARBAGE_BAG, False)
+            self.garbage_bag_led_on = False
+        return self.garbage_bag_resource_available
+
 
 class CleaningRobotError(Exception):
     pass
