@@ -47,41 +47,52 @@ class TestCleaningRobot(TestCase):
         self.assertEqual(r.recharge_led_on, False)
         self.assertEqual(r.cleaning_system_on, True)
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_wheel_motor")
-    def test_execute_command_move_forward(self, mock_wheel: Mock, mock_ibs: Mock):
+    def test_execute_command_move_forward(self, mock_wheel: Mock, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [100]
+        mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
         result = r.execute_command("f")
         mock_wheel.assert_called()
+        mock_ccr.assert_called()
         self.assertEqual(result, "0,1,N")
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_rotation_motor")
-    def test_execute_command_move_right(self, mock_rotation: Mock, mock_ibs: Mock):
+    def test_execute_command_move_right(self, mock_rotation: Mock, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [100]
+        mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
         result =r.execute_command("r")
         mock_rotation.assert_called_once_with("r")
+        mock_ccr.assert_called()
         self.assertEqual(result, "0,0,E")
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_rotation_motor")
-    def test_execute_command_move_left(self, mock_rotation: Mock, mock_ibs: Mock):
+    def test_execute_command_move_left(self, mock_rotation: Mock, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [100]
+        mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
         result = r.execute_command("l")
         mock_rotation.assert_called_once_with("l")
+        mock_ccr.assert_called()
         self.assertEqual(result, "0,0,W")
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_wheel_motor")
     @patch.object(CleaningRobot, "activate_rotation_motor")
-    def test_execute_command_move_more_than_once(self, mock_rotation: Mock, mock_wheel: Mock, mock_ibs: Mock):
+    def test_execute_command_move_more_than_once(self, mock_rotation: Mock, mock_wheel: Mock, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [100, 99, 99]
+        mock_ccr.side_effect = [True, True, True]
         r = CleaningRobot()
         r.initialize_robot()
         r.execute_command("f")
@@ -92,14 +103,27 @@ class TestCleaningRobot(TestCase):
             unittest.mock.call(),
             unittest.mock.call()
         ])
+        mock_ccr.assert_called()
         self.assertEqual(result, "1,1,E")
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
-    def test_execute_command_wrong_command(self, mock_ibs: Mock):
+    def test_execute_command_wrong_command(self, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [100]
+        mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
+        mock_ccr.assert_called()
         self.assertRaises(CleaningRobotError, r.execute_command, "a")
+
+    @patch.object(CleaningRobot, "check_cleaning_resources")
+    def test_execute_command_when_cleaning_resources_not_ok(self, mock_ccr: Mock):
+        mock_ccr.return_value = False
+        r = CleaningRobot()
+        r.initialize_robot()
+        result = r.execute_command("f")
+        mock_ccr.assert_called()
+        self.assertEqual(result, "0,0,N")
 
     @patch.object(GPIO, "input")
     def test_obstacle_found(self, mock_input: Mock):
@@ -236,3 +260,4 @@ class TestCleaningRobot(TestCase):
         r = CleaningRobot()
         r.initialize_robot()
         mock_ccr.assert_called()
+
