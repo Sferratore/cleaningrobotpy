@@ -92,7 +92,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(CleaningRobot, "activate_rotation_motor")
     def test_execute_command_move_more_than_once(self, mock_rotation: Mock, mock_wheel: Mock, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [100, 99, 99]
-        mock_ccr.side_effect = [True, True, True]
+        mock_ccr.side_effect = [True, True, True, True]
         r = CleaningRobot()
         r.initialize_robot()
         r.execute_command("f")
@@ -103,7 +103,12 @@ class TestCleaningRobot(TestCase):
             unittest.mock.call(),
             unittest.mock.call()
         ])
-        mock_ccr.assert_called()
+        mock_ccr.assert_has_calls([
+            unittest.mock.call(),
+            unittest.mock.call(),
+            unittest.mock.call(),
+            unittest.mock.call()
+        ])
         self.assertEqual(result, "1,1,E")
 
     @patch.object(CleaningRobot, "check_cleaning_resources")
@@ -117,7 +122,9 @@ class TestCleaningRobot(TestCase):
         self.assertRaises(CleaningRobotError, r.execute_command, "a")
 
     @patch.object(CleaningRobot, "check_cleaning_resources")
-    def test_execute_command_when_cleaning_resources_not_ok(self, mock_ccr: Mock):
+    @patch.object(IBS, "get_charge_left")
+    def test_execute_command_when_cleaning_resources_not_ok(self, mock_ibs: Mock, mock_ccr: Mock):
+        mock_ibs.side_effect = [100]
         mock_ccr.return_value = False
         r = CleaningRobot()
         r.initialize_robot()
@@ -125,8 +132,10 @@ class TestCleaningRobot(TestCase):
         mock_ccr.assert_called()
         self.assertEqual(result, "0,0,N")
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(GPIO, "input")
-    def test_obstacle_found(self, mock_input: Mock):
+    def test_obstacle_found(self, mock_input: Mock, mock_ccr: Mock):
+        mock_ccr.return_value = True
         mock_input.side_effect = [True, False]
         r = CleaningRobot()
         r.initialize_robot()
@@ -139,20 +148,24 @@ class TestCleaningRobot(TestCase):
         self.assertTrue(result)
         self.assertFalse(result2)
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "obstacle_found")
-    def test_obstacle_detecting_in_execute_command(self, mock_obstacle: Mock, mock_ibs: Mock):
+    def test_obstacle_detecting_in_execute_command(self, mock_obstacle: Mock, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [100]
         mock_obstacle.side_effect = [True]
+        mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
         result = r.execute_command("f")
         mock_obstacle.assert_called()
         self.assertEqual(result, "(0,0,N)(0,1)")
 
+    @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
-    def test_execute_command_when_battery_is_under_10(self, mock_ibs: Mock):
+    def test_execute_command_when_battery_is_under_10(self, mock_ibs: Mock, mock_ccr: Mock):
         mock_ibs.side_effect = [9]
+        mock_ccr.return_value = True
         r = CleaningRobot()
         r.manage_cleaning_system = MagicMock(wraps=r.manage_cleaning_system) #  I substituted the original method with the MagicMock version that still has the original code inside thanks to the wrap, so that I can mock without having problems in the usage. If you use @patch.object on this, it breaks!!
         r.initialize_robot()

@@ -92,6 +92,8 @@ class CleaningRobot:
 
     def execute_command(self, command: str) -> str:
         self.manage_cleaning_system()
+        if not self.check_cleaning_resources():
+            return self.robot_status()
         if (not self.cleaning_system_on and self.recharge_led_on):
             return f"!({self.pos_x},{self.pos_y},{self.heading})"
         if command == self.FORWARD:
