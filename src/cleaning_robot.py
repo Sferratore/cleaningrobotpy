@@ -92,41 +92,71 @@ class CleaningRobot:
 
     def execute_command(self, command: str) -> str:
         self.manage_cleaning_system()
+
         if not self.check_cleaning_resources():
             return self.robot_status()
-        if (not self.cleaning_system_on and self.recharge_led_on):
+
+        if not self.cleaning_system_on and self.recharge_led_on:
             return f"!({self.pos_x},{self.pos_y},{self.heading})"
+
         if command == self.FORWARD:
-            if self.obstacle_found():
-                if self.heading == self.E:
-                    return f"({self.pos_x},{self.pos_y},{self.heading})({self.pos_x+1},{self.pos_y})"
-                elif self.heading == self.W:
-                    return f"({self.pos_x},{self.pos_y},{self.heading})({self.pos_x-1},{self.pos_y})"
-                elif self.heading == self.N:
-                    return f"({self.pos_x},{self.pos_y},{self.heading})({self.pos_x},{self.pos_y+1})"
-                elif self.heading == self.S:
-                    return f"({self.pos_x},{self.pos_y},{self.heading})({self.pos_x},{self.pos_y-1})"
-            else:
-                self.activate_wheel_motor()
-                if self.heading == self.E:
-                    self.pos_x += 1;
-                elif self.heading == self.W:
-                    self.pos_x += -1
-                elif self.heading == self.N:
-                    self.pos_y += 1
-                elif self.heading == self.S:
-                    self.pos_y += -1
-                else:
-                    raise CleaningRobotError("Heading is not a correct value.")
-        elif command == self.LEFT:
-            self.activate_rotation_motor(self.LEFT)
-            self.heading = self.W if self.heading == self.N else self.N
-        elif command == self.RIGHT:
-            self.activate_rotation_motor(self.RIGHT)
-            self.heading = self.E if self.heading == self.N else self.N
-        else:
-            raise CleaningRobotError("Invalid command")
+            return self._handle_forward_command()
+
+        if command in (self.LEFT, self.RIGHT):
+            self._handle_rotation_command(command)
+            return self.robot_status()
+
+        raise CleaningRobotError("Invalid command")
+
+    def _handle_forward_command(self) -> str:
+        if self.obstacle_found():
+            return self._obstacle_detected_response()
+
+        self.activate_wheel_motor()
+        self._update_position_moving_forward()
         return self.robot_status()
+
+    def _handle_rotation_command(self, direction: str):
+        self.activate_rotation_motor(direction)
+
+        if direction == self.LEFT:
+            self.heading = self._rotate_left()
+        elif direction == self.RIGHT:
+            self.heading = self._rotate_right()
+
+    def _update_position_moving_forward(self):
+        if self.heading == self.E:
+            self.pos_x += 1
+        elif self.heading == self.W:
+            self.pos_x -= 1
+        elif self.heading == self.N:
+            self.pos_y += 1
+        elif self.heading == self.S:
+            self.pos_y -= 1
+        else:
+            raise CleaningRobotError("Heading is not a correct value.")
+
+    def _obstacle_detected_response(self) -> str:
+        next_x, next_y = self.pos_x, self.pos_y
+
+        if self.heading == self.E:
+            next_x += 1
+        elif self.heading == self.W:
+            next_x -= 1
+        elif self.heading == self.N:
+            next_y += 1
+        elif self.heading == self.S:
+            next_y -= 1
+
+        return f"({self.pos_x},{self.pos_y},{self.heading})({next_x},{next_y})"
+
+    def _rotate_left(self) -> str:
+        rotations = {self.N: self.W, self.W: self.S, self.S: self.E, self.E: self.N}
+        return rotations[self.heading]
+
+    def _rotate_right(self) -> str:
+        rotations = {self.N: self.E, self.E: self.S, self.S: self.W, self.W: self.N}
+        return rotations[self.heading]
 
     def obstacle_found(self) -> bool:
         return GPIO.input(self.INFRARED_PIN)
