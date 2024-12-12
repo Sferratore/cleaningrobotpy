@@ -22,7 +22,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(GPIO, "output")
     @patch.object(IBS, "get_charge_left")
     def test_manage_clean_system_when_charge_less_than_10_percent(self, mock_ibs: Mock, mock_output: Mock):
-        mock_ibs.side_effect = [9]  # Per qualche motivo mi veniva restituito un oggetto MagicMock con return_value. Ho quindi usato side_effect
+        mock_ibs.return_value = 9
         r = CleaningRobot()
         r.initialize_robot()
         r.manage_cleaning_system()
@@ -36,7 +36,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(GPIO, "output")
     @patch.object(IBS, "get_charge_left")
     def test_manage_clean_system_when_charge_less_than_10_percent(self, mock_ibs: Mock, mock_output: Mock):
-        mock_ibs.side_effect = [11]  # Per qualche motivo mi veniva restituito un oggetto MagicMock con return_value. Ho quindi usato side_effect
+        mock_ibs.return_value = 11
         r = CleaningRobot()
         r.initialize_robot()
         r.manage_cleaning_system()
@@ -51,7 +51,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_wheel_motor")
     def test_execute_command_move_forward(self, mock_wheel: Mock, mock_ibs: Mock, mock_ccr: Mock):
-        mock_ibs.side_effect = [100]
+        mock_ibs.return_value = 100
         mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
@@ -64,7 +64,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_rotation_motor")
     def test_execute_command_move_right(self, mock_rotation: Mock, mock_ibs: Mock, mock_ccr: Mock):
-        mock_ibs.side_effect = [100]
+        mock_ibs.return_value = 100
         mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
@@ -77,7 +77,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "activate_rotation_motor")
     def test_execute_command_move_left(self, mock_rotation: Mock, mock_ibs: Mock, mock_ccr: Mock):
-        mock_ibs.side_effect = [100]
+        mock_ibs.return_value = 100
         mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
@@ -114,7 +114,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     def test_execute_command_wrong_command(self, mock_ibs: Mock, mock_ccr: Mock):
-        mock_ibs.side_effect = [100]
+        mock_ibs.return_value = 100
         mock_ccr.return_value = True
         r = CleaningRobot()
         r.initialize_robot()
@@ -124,7 +124,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     def test_execute_command_when_cleaning_resources_not_ok(self, mock_ibs: Mock, mock_ccr: Mock):
-        mock_ibs.side_effect = [100]
+        mock_ibs.return_value = 100
         mock_ccr.return_value = False
         r = CleaningRobot()
         r.initialize_robot()
@@ -152,7 +152,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(IBS, "get_charge_left")
     @patch.object(CleaningRobot, "obstacle_found")
     def test_obstacle_detecting_in_execute_command(self, mock_obstacle: Mock, mock_ibs: Mock, mock_ccr: Mock):
-        mock_ibs.side_effect = [100]
+        mock_ibs.return_value = 100
         mock_obstacle.side_effect = [True]
         mock_ccr.return_value = True
         r = CleaningRobot()
@@ -164,7 +164,7 @@ class TestCleaningRobot(TestCase):
     @patch.object(CleaningRobot, "check_cleaning_resources")
     @patch.object(IBS, "get_charge_left")
     def test_execute_command_when_battery_is_under_10(self, mock_ibs: Mock, mock_ccr: Mock):
-        mock_ibs.side_effect = [9]
+        mock_ibs.return_value = 9
         mock_ccr.return_value = True
         r = CleaningRobot()
         r.manage_cleaning_system = MagicMock(wraps=r.manage_cleaning_system) #  I substituted the original method with the MagicMock version that still has the original code inside thanks to the wrap, so that I can mock without having problems in the usage. If you use @patch.object on this, it breaks!!
